@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhuketMate - หาเพื่อนเที่ยวภูเก็ต (Cloud Edition)</title>
+    
+    <!-- นำเข้า Tailwind CSS สำหรับจัดการความสวยงาม -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- นำเข้า Font Awesome สำหรับไอคอนต่างๆ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- นำเข้าฟอนต์ภาษาไทย Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        
+        /* สไตล์สำหรับ Loading Overlay */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-20">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="loader mb-4"></div>
+        <div class="text-blue-600 font-bold animate-pulse">กำลังเชื่อมต่อฐานข้อมูล...</div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-400 bg-clip-text text-transparent cursor-pointer" onclick="window.switchTab('home')">
+                        PhuketMate
+                    </span>
+                    <span class="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200"><i class="fa-solid fa-cloud text-[8px] mr-1"></i>Cloud</span>
+                </div>
+                <div class="flex space-x-1 sm:space-x-4 items-center">
+                    <button id="tab-home" onclick="window.switchTab('home')" class="tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-blue-600 bg-blue-50">
+                        <i class="fa-solid fa-calendar-days text-lg sm:mr-1.5"></i>
+                        <span class="hidden sm:inline">ปฏิทิน</span>
+                    </button>
+                    <button id="tab-create" onclick="window.switchTab('create')" class="tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-slate-500 hover:text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-circle-plus text-lg sm:mr-1.5"></i>
+                        <span class="hidden sm:inline">หาเพื่อน</span>
+                    </button>
+                    <button id="tab-admin" onclick="window.switchTab('admin')" class="tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-slate-500 hover:text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-gear text-lg sm:mr-1.5"></i>
+                        <span class="hidden sm:inline">แอดมิน</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- ================= หน้า 1: Dashboard ================= -->
+        <div id="view-home" class="view-section animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-800">กิจกรรมภูเก็ต 🌴</h1>
+                        <p class="text-slate-500 mt-1">หาคนหารค่ารถ กินข้าว หรือทำกิจกรรมต่างๆ (ข้อมูลอัปเดตเรียลไทม์)</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-1 flex items-center shrink-0">
+                        <button onclick="window.changeWeek(-7)" class="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg transition-all">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button onclick="window.changeWeek(0)" class="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-white hover:shadow-sm rounded-lg transition-all mx-1">
+                            <i class="fa-regular fa-calendar text-blue-500 mr-2"></i> สัปดาห์นี้
+                        </button>
+                        <button onclick="window.changeWeek(7)" class="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg transition-all">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-container">
+                    <!-- Javascript -->
+                </div>
+            </div>
+
+            <div id="calendar-container" class="space-y-6">
+                <!-- Javascript -->
+            </div>
+        </div>
+
+        <!-- ================= หน้า 2: Create Form ================= -->
+        <div id="view-create" class="view-section hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-teal-500 p-6 text-white text-center">
+                    <h2 class="text-2xl font-bold flex items-center justify-center">
+                        <i class="fa-solid fa-circle-plus mr-2"></i> สร้างกิจกรรมหาเพื่อน
+                    </h2>
+                    <p class="text-blue-100 mt-1 text-sm">กรอกข้อมูลให้ครบถ้วนเพื่อหาเพื่อนที่ถูกใจ</p>
+                </div>
+
+                <form id="createForm" onsubmit="window.handleCreate(event)" class="p-6 sm:p-8 space-y-8">
+                    <!-- ข้อมูลส่วนตัว -->
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center">
+                            <span class="bg-blue-100 text-blue-700 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs mr-2">1</span>
+                            ข้อมูลของคุณ (บังคับ)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">ชื่อเล่น / นามแฝง *</label>
+                                <input required type="text" id="f_name" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น สมชาย">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">เพศ *</label>
+                                <select required id="f_gender" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="ชาย">ชาย</option>
+                                    <option value="หญิง">หญิง</option>
+                                    <option value="LGBTQ+">LGBTQ+</option>
+                                    <option value="ไม่ระบุ" selected>ไม่ระบุ</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">อายุ *</label>
+                                <input required type="number" id="f_age" min="15" max="99" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น 25">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- รายละเอียดกิจกรรม -->
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center">
+                            <span class="bg-blue-100 text-blue-700 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs mr-2">2</span>
+                            รายละเอียดกิจกรรม
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-sm font-medium text-slate-700">วันที่ทำกิจกรรม *</label>
+                                    <input required type="date" id="f_date" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-sm font-medium text-slate-700">เวลา (ตัวหลัก) *</label>
+                                    <input required type="text" id="f_time" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-blue-700" placeholder="เช่น 18.00 น. หรือ ช่วงบ่าย">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-sm font-medium text-slate-700">หมวดหมู่</label>
+                                    <select id="f_category" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                        <option value="auto">✨ ให้ระบบเลือกให้อัตโนมัติ</option>
+                                        <option value="food">🍜 สายกิน</option>
+                                        <option value="chill">☕ สายชิล</option>
+                                        <option value="travel">🏖️ สายเที่ยว</option>
+                                        <option value="sport">⚽ สายกีฬา</option>
+                                        <option value="general">📌 ทั่วไป</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">หัวข้อกิจกรรมสั้นๆ *</label>
+                                <input required type="text" id="f_title" maxlength="50" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="เช่น หาคนหารค่าแท็กซี่ไปป่าตอง">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">บรรยายกิจกรรม / รายละเอียด *</label>
+                                <textarea required id="f_desc" rows="3" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="อธิบายเพิ่มเติมว่าไปทำอะไร มีค่าใช้จ่ายไหม..."></textarea>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">สถานที่ (เว้นว่างได้)</label>
+                                <input type="text" id="f_location" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น เซ็นทรัลภูเก็ต, หาดกะตะ...">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- คนที่ตามหา -->
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center">
+                            <span class="bg-blue-100 text-blue-700 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs mr-2">3</span>
+                            คนที่คุณตามหา
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">เพศที่ต้องการหา *</label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="f_targetGender" value="ชาย" class="text-blue-600 h-4 w-4">
+                                        <span class="text-slate-700">ชาย</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="f_targetGender" value="หญิง" class="text-blue-600 h-4 w-4">
+                                        <span class="text-slate-700">หญิง</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="f_targetGender" value="เพศไหนก็ได้" checked class="text-blue-600 h-4 w-4">
+                                        <span class="text-slate-700">เพศไหนก็ได้</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-slate-700">เงื่อนไขอื่นๆ (ถ้ามี)</label>
+                                <input type="text" id="f_conditions" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น ขอคนขับรถเป็น, ไม่สูบบุหรี่">
+                            </div>
+                        </div>
+                    </section>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check mr-2"></i> โพสต์หากิจกรรม (ลง Cloud)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ================= หน้า 3: Admin ================= -->
+        <div id="view-admin" class="view-section hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="space-y-6">
+                <div class="flex items-center justify-between mb-8 border-b pb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-800">จัดการระบบ (แอดมิน)</h1>
+                        <p class="text-slate-500 mt-1">ลบโพสต์ที่ไม่เหมาะสมออกจาก Cloud Database</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                        <h3 class="font-bold text-slate-800" id="admin-count">รายการโพสต์ล่าสุด</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-slate-500 text-sm border-b border-slate-200">
+                                    <th class="px-6 py-3 font-medium">วันที่ลงกิจกรรม</th>
+                                    <th class="px-6 py-3 font-medium">หมวดหมู่</th>
+                                    <th class="px-6 py-3 font-medium">หัวข้อ</th>
+                                    <th class="px-6 py-3 font-medium text-right">การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100" id="admin-table-body">
+                                <!-- Javascript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal (ป๊อปอัพ) -->
+    <div id="activity-modal" data-open-id="" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="window.closeModal(event)">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-[zoomIn_0.2s_ease-out]" onclick="event.stopPropagation()">
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Firebase & Logic Script -->
+    <script type="module">
+        // --- นำเข้า Firebase SDK ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- ตั้งค่า Firebase ---
+        let app, auth, db;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'phuketmate-app-dev';
+        
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+                // Mock config fallback ถ้าเป็นการรันปกติ (แต่ในระบบนี้จะมี __firebase_config ฉีดเข้ามาให้)
+            };
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Firebase Initialization Failed:", e);
+        }
+
+        // --- Data State ---
+        const CATEGORIES = [
+            { id: 'all', label: 'ทั้งหมด', icon: '🌟', color: 'bg-slate-800 text-white', border: 'border-slate-800' },
+            { id: 'food', label: 'สายกิน', icon: '🍜', color: 'bg-orange-500 text-white', border: 'border-orange-500' },
+            { id: 'chill', label: 'สายชิล', icon: '☕', color: 'bg-amber-600 text-white', border: 'border-amber-600' },
+            { id: 'travel', label: 'สายเที่ยว', icon: '🏖️', color: 'bg-cyan-500 text-white', border: 'border-cyan-500' },
+            { id: 'sport', label: 'สายกีฬา', icon: '⚽', color: 'bg-emerald-500 text-white', border: 'border-emerald-500' },
+            { id: 'general', label: 'ทั่วไป', icon: '📌', color: 'bg-blue-500 text-white', border: 'border-blue-500' },
+        ];
+
+        let activities = [];
+        let currentTab = 'home';
+        let activeCategory = 'all';
+        let currentWeekStart = new Date('2026-03-30'); 
+        const TODAY_STR = '2026-03-30';
+        let currentUser = null;
+        let isInitialLoadDone = false;
+
+        // --- ฟังก์ชันยืนยันตัวตน (Authentication) ---
+        const initAuth = async () => {
+            if (!auth) return;
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>";
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                setupRealtimeListener();
+            }
+        });
+
+        // --- ระบบดึงข้อมูลเรียลไทม์ (Real-time Firestore Listener) ---
+        const setupRealtimeListener = () => {
+            if (!currentUser) return;
+            // Rule 1: ใช้ Path ที่กำหนดเท่านั้น (Public Data)
+            const activitiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'activities');
+            
+            onSnapshot(activitiesRef, (snapshot) => {
+                activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // ถ้าฐานข้อมูลว่างเปล่า (โหลดครั้งแรก) ให้สร้างข้อมูลจำลองลงไป
+                if (activities.length === 0 && !isInitialLoadDone) {
+                    seedInitialData(activitiesRef);
+                    isInitialLoadDone = true;
+                    return; // รอ Snapshot รอบหน้าทำงาน
+                }
+
+                isInitialLoadDone = true;
+                // ซ่อนหน้าจอ Loading
+                document.getElementById('loading-overlay').classList.add('hidden');
+                
+                // อัปเดตหน้าจอทันทีเมื่อมีข้อมูลใหม่เข้ามา
+                if (currentTab === 'home') renderDashboard();
+                if (currentTab === 'admin') renderAdmin();
+                
+                // ถ้าระหว่างที่มีคนแชท Pop-up เปิดอยู่ ให้อัปเดต Pop-up ด้วย
+                const modal = document.getElementById('activity-modal');
+                const openModalId = modal.getAttribute('data-open-id');
+                if (openModalId && !modal.classList.contains('hidden')) {
+                    const isJoinForm = document.getElementById('j_name') !== null;
+                    if (!isJoinForm) {
+                        // เช็คว่าผู้ใช้กำลังพิมพ์แชทอยู่ไหม จะได้ไม่กวนการพิมพ์
+                        const msgInput = document.getElementById(`chat-msg-${openModalId}`);
+                        const nameInput = document.getElementById(`chat-name-${openModalId}`);
+                        const isFocused = document.activeElement === msgInput || document.activeElement === nameInput;
+                        const savedMsg = msgInput ? msgInput.value : '';
+                        const savedName = nameInput ? nameInput.value : '';
+
+                        window.openModal(openModalId, true);
+
+                        // คืนค่าที่พิมพ์ค้างไว้ให้
+                        if (isFocused) {
+                            const newMsgInput = document.getElementById(`chat-msg-${openModalId}`);
+                            const newNameInput = document.getElementById(`chat-name-${openModalId}`);
+                            if (newNameInput) newNameInput.value = savedName;
+                            if (newMsgInput) {
+                                newMsgInput.value = savedMsg;
+                                if(document.activeElement.id === `chat-msg-${openModalId}`) newMsgInput.focus();
+                                if(document.activeElement.id === `chat-name-${openModalId}`) newNameInput.focus();
+                            }
+                        }
+                    }
+                }
+            }, (error) => {
+                console.error("Firestore Listener Error:", error);
+            });
+        };
+
+        // --- ข้อมูลจำลองเมื่อเข้าเว็บครั้งแรก ---
+        const seedInitialData = async (activitiesRef) => {
+            const seedData = [
+                { id: 'seed_1', creatorName: 'สมชาย', creatorGender: 'ชาย', creatorAge: 25, date: '2026-03-31', time: '18:00 - 20:00', title: 'เตะฟุตบอลหญ้าเทียม', description: 'ขาดคนหารค่าสนาม 2 คน เล่นขำๆ', location: 'สนามฟุตบอล TX Park', targetGender: 'ชาย', conditions: 'หารคนละ 100', category: 'sport', interested: [{name: 'นิด', gender: 'หญิง', age: 20}], chat: [{ sender: 'สมชาย', message: 'หาคนเพิ่มครับ ด่วนๆ', time: '10:00 น.' }] },
+                { id: 'seed_2', creatorName: 'แอนนี่', creatorGender: 'หญิง', creatorAge: 28, date: '2026-04-01', time: '10:00 น.', title: 'คาเฟ่ฮอปปิ้ง ย่านเมืองเก่า', description: 'หาเพื่อนสาวไปถ่ายรูปคาเฟ่เปิดใหม่', location: 'ย่าน Old Town ภูเก็ต', targetGender: 'หญิง', conditions: 'แต่งตัวคุมโทนสีขาว', category: 'chill', interested: [], chat: [] },
+                { id: 'seed_3', creatorName: 'ปอนด์', creatorGender: 'ชาย', creatorAge: 27, date: '2026-03-30', time: '19:30 น.', title: 'หาเพื่อนกินหมูกระทะ ชิลวา', description: 'อยากกินแต่ไม่อยากไปคนเดียว', location: 'ตลาดชิลวา ภูเก็ต', targetGender: 'เพศไหนก็ได้', conditions: 'กินดุ', category: 'food', interested: [], chat: [] }
+            ];
+            for (const item of seedData) {
+                await setDoc(doc(activitiesRef, item.id), item);
+            }
+        };
+
+        // --- Functions Logic ที่ต้องเปิดให้ UI เข้าถึงได้ผ่าน window. ---
+
+        window.switchTab = (tabId) => {
+            currentTab = tabId;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.className = 'tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-slate-500 hover:text-slate-700 hover:bg-slate-100';
+            });
+            
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            let activeBtn = document.getElementById(`tab-${tabId}`);
+            if(tabId === 'admin') {
+                activeBtn.className = 'tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-red-600 bg-red-50';
+                renderAdmin();
+            } else {
+                activeBtn.className = 'tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-blue-600 bg-blue-50';
+            }
+            if(tabId === 'home') renderDashboard();
+        };
+
+        window.changeWeek = (days) => {
+            if (days === 0) {
+                currentWeekStart = new Date('2026-03-30');
+            } else {
+                currentWeekStart.setDate(currentWeekStart.getDate() + days);
+            }
+            renderDashboard();
+        };
+
+        window.setCategory = (catId) => {
+            activeCategory = catId;
+            renderDashboard();
+        };
+
+        function renderDashboard() {
+            const catContainer = document.getElementById('category-container');
+            let catHtml = `<div class="flex items-center text-sm font-bold text-slate-400 mr-2 shrink-0"><i class="fa-solid fa-filter mr-1"></i> หมวดหมู่:</div>`;
+            CATEGORIES.forEach(cat => {
+                const isActive = activeCategory === cat.id;
+                const activeClass = isActive ? `${cat.color} border-transparent shadow-md` : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50';
+                catHtml += `<button onclick="window.setCategory('${cat.id}')" class="shrink-0 flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${activeClass}">
+                    <span class="mr-1.5 text-base">${cat.icon}</span> ${cat.label}
+                </button>`;
+            });
+            catContainer.innerHTML = catHtml;
+
+            const calContainer = document.getElementById('calendar-container');
+            let calHtml = '';
+            const daysNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+            const monthNames = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(currentWeekStart);
+                d.setDate(d.getDate() + i);
+                let dateStr = d.toISOString().split('T')[0];
+                let isToday = (dateStr === TODAY_STR);
+
+                let dayActs = activities.filter(a => a.date === dateStr);
+                if (activeCategory !== 'all') {
+                    dayActs = dayActs.filter(a => a.category === activeCategory);
+                }
+
+                // เรียงตามเวลา (ถ้าดึงจากฐานข้อมูลมาอาจจะสลับกัน)
+                dayActs.sort((a,b) => a.time.localeCompare(b.time));
+
+                let dateBlockClass = isToday ? 'bg-gradient-to-b from-blue-600 to-blue-700 text-white border-blue-700' : 'bg-slate-50 border-slate-200 text-slate-700';
+                
+                let dayHtml = `
+                <div class="flex flex-col sm:flex-row bg-white rounded-2xl shadow-sm border ${isToday ? 'border-blue-400 shadow-blue-100' : 'border-slate-200'} overflow-hidden transition-all">
+                    <div class="sm:w-32 shrink-0 flex flex-row sm:flex-col items-center justify-between sm:justify-center p-4 sm:border-r border-b sm:border-b-0 ${dateBlockClass}">
+                        <div class="flex sm:flex-col items-center gap-2 sm:gap-0">
+                            <span class="text-sm font-bold uppercase tracking-wider opacity-90">${daysNames[d.getDay()]}</span>
+                            <span class="text-3xl sm:text-4xl font-black my-0 sm:my-1">${d.getDate()}</span>
+                            <span class="text-sm font-medium opacity-90">${monthNames[d.getMonth()]}</span>
+                        </div>
+                        ${isToday ? `<span class="sm:mt-3 text-[10px] font-bold bg-white text-blue-700 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">วันนี้</span>` : ''}
+                    </div>
+                    <div class="flex-1 p-4 sm:p-5 space-y-3">
+                `;
+
+                if (dayActs.length === 0) {
+                    dayHtml += `<div class="h-full min-h-[80px] flex items-center justify-center text-slate-400 text-sm bg-slate-50/50 rounded-xl border border-dashed border-slate-200">ไม่มีกิจกรรมในหมวดหมู่นี้</div>`;
+                } else {
+                    dayActs.forEach(act => {
+                        let catInfo = CATEGORIES.find(c => c.id === act.category) || CATEGORIES[5];
+                        let colorBase = catInfo.color.split(' ')[0];
+                        let interestCount = act.interested ? act.interested.length : 0;
+
+                        dayHtml += `
+                        <div onclick="window.openModal('${act.id}')" class="group flex flex-col sm:flex-row bg-white border border-slate-100 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer gap-4 items-start sm:items-center relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 ${colorBase} opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div class="flex flex-col items-start sm:items-center justify-center shrink-0 sm:w-28 pl-3">
+                                <div class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight group-hover:text-blue-600 transition-colors">${act.time}</div>
+                                <div class="mt-1 flex items-center text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                                    <span class="mr-1">${catInfo.icon}</span> ${catInfo.label}
+                                </div>
+                            </div>
+                            <div class="hidden sm:block w-px h-12 bg-slate-100"></div>
+                            
+                            <div class="flex-1 min-w-0 w-full mt-2 sm:mt-0">
+                                <h3 class="text-base font-bold text-slate-800 group-hover:text-blue-600 leading-tight mb-1 truncate">${act.title}</h3>
+                                <p class="text-xs text-slate-500 line-clamp-1">${act.description}</p>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2 shrink-0 w-full sm:w-[150px] text-xs font-medium bg-slate-50 sm:bg-transparent p-2 sm:p-0 rounded-lg">
+                                <div class="flex items-center text-slate-600">
+                                    <i class="fa-solid fa-users w-3.5 mr-1.5 text-blue-500 text-center"></i>
+                                    <span class="truncate">หา: ${act.targetGender}</span>
+                                </div>
+                                <div class="flex items-center text-slate-600">
+                                    <i class="fa-solid fa-hand-sparkles w-3.5 mr-1.5 ${interestCount > 0 ? 'text-amber-500' : 'text-slate-400'} text-center"></i>
+                                    <span class="truncate font-semibold ${interestCount > 0 ? 'text-amber-600' : 'text-slate-500'}">
+                                        สนใจแล้ว: ${interestCount} คน
+                                    </span>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                }
+                dayHtml += `</div></div>`;
+                calHtml += dayHtml;
+            }
+            calContainer.innerHTML = calHtml;
+        }
+
+        // เพิ่มกิจกรรมลง Cloud
+        window.handleCreate = async (e) => {
+            e.preventDefault();
+            if(!currentUser) return;
+
+            const autoCategorize = (title, desc) => {
+                const text = (title + ' ' + desc).toLowerCase();
+                if (text.includes('กิน') || text.includes('บุฟเฟต์') || text.includes('ข้าว') || text.includes('หมูกระทะ')) return 'food';
+                if (text.includes('คาเฟ่') || text.includes('กาแฟ') || text.includes('ถ่ายรูป') || text.includes('ชิล')) return 'chill';
+                if (text.includes('เที่ยว') || text.includes('ทะเล') || text.includes('ป่าตอง') || text.includes('เกาะ')) return 'travel';
+                if (text.includes('เตะบอล') || text.includes('วิ่ง') || text.includes('ฟิตเนส') || text.includes('กีฬา')) return 'sport';
+                return 'general';
+            };
+            
+            let cat = document.getElementById('f_category').value;
+            let title = document.getElementById('f_title').value;
+            let desc = document.getElementById('f_desc').value;
+            if (cat === 'auto') cat = autoCategorize(title, desc);
+
+            let targetGender = "ไม่ระบุ";
+            document.getElementsByName('f_targetGender').forEach(radio => {
+                if(radio.checked) targetGender = radio.value;
+            });
+
+            const newId = Date.now().toString(); // รหัสอ้างอิง
+            const newAct = {
+                creatorName: document.getElementById('f_name').value,
+                creatorGender: document.getElementById('f_gender').value,
+                creatorAge: document.getElementById('f_age').value,
+                date: document.getElementById('f_date').value,
+                time: document.getElementById('f_time').value,
+                title: title,
+                description: desc,
+                location: document.getElementById('f_location').value,
+                targetGender: targetGender,
+                conditions: document.getElementById('f_conditions').value,
+                category: cat,
+                interested: [], 
+                chat: [],
+                createdAt: new Date().toISOString()
+            };
+
+            // โยนขึ้น Firestore (Cloud)
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'activities', newId), newAct);
+                alert("โพสต์กิจกรรมขึ้น Cloud สำเร็จ! คนอื่นเห็นแน่นอนครับ 🌴");
+                document.getElementById('createForm').reset();
+                window.switchTab('home');
+            } catch (error) {
+                console.error("Error creating post", error);
+                alert("เกิดข้อผิดพลาดในการโพสต์ โปรดลองใหม่");
+            }
+        };
+
+        // ลบข้อมูลบน Cloud (Admin)
+        window.deleteActivity = async (id) => {
+            if(!currentUser) return;
+            if(confirm('คุณแน่ใจหรือไม่ที่จะลบกิจกรรมนี้ออกจาก Cloud?')) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'activities', id));
+                } catch(error) {
+                    console.error("Error deleting", error);
+                }
+            }
+        };
+
+        function renderAdmin() {
+            document.getElementById('admin-count').innerText = `รายการโพสต์ล่าสุด (${activities.length} โพสต์)`;
+            const tbody = document.getElementById('admin-table-body');
+            let html = '';
+            
+            if(activities.length === 0) {
+                html = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">ไม่มีกิจกรรมในระบบ</td></tr>`;
+            } else {
+                activities.forEach(act => {
+                    let catInfo = CATEGORIES.find(c => c.id === act.category) || CATEGORIES[5];
+                    html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 text-sm text-slate-600">${act.date}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold ${catInfo.color}">
+                                ${catInfo.icon} ${catInfo.label}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-slate-800">${act.title}</div>
+                            <div class="text-xs text-slate-500 truncate max-w-xs">${act.description}</div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="window.deleteActivity('${act.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition-colors inline-flex items-center text-sm">
+                                <i class="fa-solid fa-trash-can mr-1"></i> ลบ
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        // --- ระบบแสดงผล Modal (รองรับ Real-time) ---
+        window.openModal = (id, isSilentUpdate = false) => {
+            const act = activities.find(a => a.id === id);
+            if(!act) return;
+
+            const modalEl = document.getElementById('activity-modal');
+            modalEl.setAttribute('data-open-id', id);
+
+            let catInfo = CATEGORIES.find(c => c.id === act.category) || CATEGORIES[5];
+            let colorBase = catInfo.color.split(' ')[0];
+
+            let interestedHtml = '';
+            if (act.interested && act.interested.length > 0) {
+                interestedHtml = `<ul class="space-y-2">`;
+                act.interested.forEach(p => {
+                    interestedHtml += `
+                    <li class="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 text-sm text-slate-700 flex items-center shadow-sm">
+                        <i class="fa-solid fa-user-check text-blue-500 mr-2"></i>
+                        <span class="font-bold text-slate-800 mr-1.5">${p.name}</span> / ${p.gender} / ${p.age} ปี
+                    </li>`;
+                });
+                interestedHtml += `</ul>`;
+            } else {
+                interestedHtml = `<div class="text-sm text-slate-500 bg-slate-50 p-3 rounded-lg text-center border border-dashed border-slate-200">ยังไม่มีผู้สนใจ เป็นคนแรกเลยสิ! 👇</div>`;
+            }
+
+            let chatMessagesHtml = '';
+            if (act.chat && act.chat.length > 0) {
+                act.chat.forEach(c => {
+                    let isCreator = (c.sender === act.creatorName);
+                    chatMessagesHtml += `
+                    <div class="bg-white p-2.5 rounded shadow-sm text-sm border border-slate-200 animate-[fadeIn_0.3s_ease]">
+                        <div class="flex justify-between items-baseline mb-1">
+                            <span class="font-bold text-blue-700">${c.sender} ${isCreator ? '<span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded ml-1"><i class="fa-solid fa-star text-[8px] mr-0.5"></i>เจ้าของโพสต์</span>' : ''}</span>
+                            <span class="text-[10px] text-slate-400">${c.time}</span>
+                        </div>
+                        <p class="text-slate-700 break-words">${c.message}</p>
+                    </div>`;
+                });
+            } else {
+                chatMessagesHtml = `<div class="text-sm text-slate-400 text-center mt-6">ยังไม่มีข้อความ พิมพ์ทักทายได้เลย 👋</div>`;
+            }
+
+            let html = `
+            <div class="bg-blue-50 p-4 flex justify-between items-start border-b border-blue-100 relative">
+                <div class="absolute top-0 left-0 right-0 h-1.5 ${colorBase}"></div>
+                <div>
+                    <div class="flex gap-2 mb-2">
+                        <span class="inline-block bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-semibold">${act.date}</span>
+                        <span class="inline-flex items-center text-xs px-2 py-1 rounded-full font-bold ${catInfo.color}">
+                            ${catInfo.icon} ${catInfo.label}
+                        </span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 leading-tight">${act.title}</h2>
+                </div>
+                <button onclick="window.closeModal()" class="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto chat-scroll">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                    <div class="flex items-start">
+                        <i class="fa-regular fa-clock text-blue-500 mr-3 mt-1"></i>
+                        <div><div class="text-xs text-slate-500 font-medium">เวลา</div><div class="text-slate-800 font-bold text-lg">${act.time}</div></div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-location-dot text-red-500 mr-3 mt-1 w-4 text-center"></i>
+                        <div><div class="text-xs text-slate-500 font-medium">สถานที่</div><div class="text-slate-800 font-semibold">${act.location || 'ไม่ได้ระบุสถานที่แน่ชัด'}</div></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center"><i class="fa-solid fa-circle-info mr-2 text-slate-400"></i> รายละเอียดกิจกรรม</h3>
+                    <p class="text-slate-600 text-sm whitespace-pre-line leading-relaxed">${act.description}</p>
+                </div>
+                
+                <div class="border-t border-slate-100 pt-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">คนที่ตามหา / เงื่อนไข</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-orange-50 p-3 rounded-lg border border-orange-100 text-sm">
+                            <span class="block text-xs text-orange-600 font-medium mb-1">เพศที่ต้องการ</span><span class="font-semibold text-orange-900">${act.targetGender}</span>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
+                            <span class="block text-xs text-green-600 font-medium mb-1">ผู้ตั้งโพสต์</span><span class="font-semibold text-green-900">${act.creatorName} (${act.creatorGender}, ${act.creatorAge} ปี)</span>
+                        </div>
+                    </div>
+                    ${act.conditions ? `<div class="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100"><span class="font-semibold text-slate-800">เงื่อนไขเพิ่มเติม:</span> ${act.conditions}</div>` : ''}
+                </div>
+
+                <div class="border-t border-slate-100 pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-800">ผู้ที่สนใจเข้าร่วม <span class="text-blue-600">(${act.interested ? act.interested.length : 0} คน)</span></h3>
+                        <button onclick="window.showJoinForm('${act.id}')" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md transition-colors shadow-sm">
+                            <i class="fa-solid fa-plus mr-1"></i> ลงชื่อสนใจ
+                        </button>
+                    </div>
+                    ${interestedHtml}
+                </div>
+
+                <!-- ห้องแชท Cloud -->
+                <div class="border-t border-slate-100 pt-4 mt-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fa-regular fa-comments text-blue-500 mr-2"></i>กระดานพูดคุย (Live Chat)
+                    </h3>
+                    <div id="chat-box-${act.id}" class="bg-slate-100 rounded-lg p-3 h-48 overflow-y-auto space-y-2 mb-3 chat-scroll">
+                        ${chatMessagesHtml}
+                    </div>
+                    <form onsubmit="window.sendChatMessage(event, '${act.id}')" class="flex flex-col gap-2">
+                        <div class="flex gap-2">
+                            <div class="w-1/3">
+                                <input type="text" id="chat-name-${act.id}" placeholder="ชื่อของคุณ..." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-blue-500 shadow-sm" required>
+                            </div>
+                            <div class="w-2/3 flex gap-2">
+                                <input type="text" id="chat-msg-${act.id}" placeholder="พิมพ์ข้อความ..." class="flex-1 w-full text-sm px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-blue-500 shadow-sm" required autocomplete="off">
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow-sm transition-colors">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            `;
+
+            document.getElementById('modal-content').innerHTML = html;
+            
+            if(!isSilentUpdate) {
+                modalEl.classList.remove('hidden');
+            }
+
+            // เลื่อนลงล่างสุดในแชทเสมอ
+            setTimeout(() => {
+                const box = document.getElementById(`chat-box-${act.id}`);
+                if(box) box.scrollTop = box.scrollHeight;
+            }, 50);
+        };
+
+        // ส่งข้อความขึ้น Cloud
+        window.sendChatMessage = async (e, id) => {
+            e.preventDefault();
+            if(!currentUser) return;
+
+            const nameInput = document.getElementById(`chat-name-${id}`);
+            const msgInput = document.getElementById(`chat-msg-${id}`);
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) + ' น.';
+
+            const newMsg = {
+                sender: nameInput.value,
+                message: msgInput.value,
+                time: timeStr
+            };
+
+            const actRef = doc(db, 'artifacts', appId, 'public', 'data', 'activities', id);
+            
+            // ล้างช่องกรอกทันทีเพื่อความสมูท
+            msgInput.value = '';
+            
+            try {
+                // อัปเดต Array ใน Firestore แบบ Real-time
+                await updateDoc(actRef, {
+                    chat: arrayUnion(newMsg)
+                });
+            } catch(err) {
+                console.error("Chat Error", err);
+                alert("ส่งข้อความไม่สำเร็จ");
+            }
+        };
+
+        window.showJoinForm = (id) => {
+            const act = activities.find(a => a.id === id);
+            document.getElementById('activity-modal').setAttribute('data-open-id', 'join_form'); // ป้องกันรีเฟรชกวนฟอร์ม
+            
+            let html = `
+            <div class="bg-blue-50 p-4 flex justify-between items-center border-b border-blue-100">
+                <button onclick="window.openModal('${id}')" class="text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm font-bold">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับ
+                </button>
+                <button onclick="window.closeModal()" class="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="window.submitJoinForm(event, '${id}')" class="p-6 space-y-5">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-bold text-slate-800">ลงชื่อสนใจเข้าร่วม</h2>
+                    <p class="text-sm text-slate-500 mt-1">กิจกรรม: <span class="font-bold text-blue-600">${act.title}</span></p>
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-700">ชื่อเล่น / นามแฝง *</label>
+                    <input required type="text" id="j_name" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ใส่ชื่อของคุณ">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium text-slate-700">เพศ *</label>
+                        <select required id="j_gender" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                            <option value="LGBTQ+">LGBTQ+</option>
+                            <option value="ไม่ระบุ" selected>ไม่ระบุ</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium text-slate-700">อายุ</label>
+                        <input type="number" id="j_age" min="15" max="99" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ไม่ระบุก็ได้">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center">
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> บันทึกขึ้น Cloud
+                    </button>
+                </div>
+            </form>
+            `;
+            document.getElementById('modal-content').innerHTML = html;
+        };
+
+        // เพิ่มคนสนใจขึ้น Cloud
+        window.submitJoinForm = async (e, id) => {
+            e.preventDefault();
+            if(!currentUser) return;
+
+            let ageVal = document.getElementById('j_age').value;
+            const newInterest = {
+                name: document.getElementById('j_name').value,
+                gender: document.getElementById('j_gender').value,
+                age: ageVal ? ageVal : 'ไม่ระบุ'
+            };
+
+            const actRef = doc(db, 'artifacts', appId, 'public', 'data', 'activities', id);
+            
+            try {
+                await updateDoc(actRef, {
+                    interested: arrayUnion(newInterest)
+                });
+                alert("ลงชื่อสนใจบน Cloud สำเร็จ! คนตั้งโพสต์จะเห็นชื่อคุณทันทีครับ 👏");
+                window.openModal(id);
+            } catch(err) {
+                console.error("Join error", err);
+                alert("เกิดข้อผิดพลาดในการลงชื่อ");
+            }
+        };
+
+        window.closeModal = (e) => {
+            if(!e || e.target.id === 'activity-modal' || !e.target) {
+                const modal = document.getElementById('activity-modal');
+                modal.classList.add('hidden');
+                modal.setAttribute('data-open-id', '');
+            }
+        };
+
+        // --- เริ่มต้นระบบ ---
+        document.getElementById('f_date').value = TODAY_STR;
+        document.getElementById('f_date').min = TODAY_STR;
+        
+        // รันฟังก์ชันยืนยันตัวตน เพื่อปลดล็อก Database
+        initAuth();
+
+    </script>
+</body>
+</html>
