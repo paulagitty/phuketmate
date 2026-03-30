@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhuketMate - หาเพื่อนเที่ยวภูเก็ต (Cloud Edition)</title>
+    <title>PhuketMate - หาเพื่อนเที่ยวภูเก็ต</title>
     
     <!-- นำเข้า Tailwind CSS สำหรับจัดการความสวยงาม -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,7 +52,7 @@
                     <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-400 bg-clip-text text-transparent cursor-pointer" onclick="window.switchTab('home')">
                         PhuketMate
                     </span>
-                    <span class="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200"><i class="fa-solid fa-cloud text-[8px] mr-1"></i>Cloud</span>
+                    <span class="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200"><i class="fa-solid fa-cloud text-[8px] mr-1"></i>Live</span>
                 </div>
                 <div class="flex space-x-1 sm:space-x-4 items-center">
                     <button id="tab-home" onclick="window.switchTab('home')" class="tab-btn flex flex-col sm:flex-row items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-blue-600 bg-blue-50">
@@ -220,7 +220,7 @@
                     </section>
 
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center">
-                        <i class="fa-solid fa-circle-check mr-2"></i> โพสต์หากิจกรรม (ลง Cloud)
+                        <i class="fa-solid fa-circle-check mr-2"></i> โพสต์หากิจกรรม
                     </button>
                 </form>
             </div>
@@ -232,7 +232,7 @@
                 <div class="flex items-center justify-between mb-8 border-b pb-4">
                     <div>
                         <h1 class="text-3xl font-bold text-slate-800">จัดการระบบ (แอดมิน)</h1>
-                        <p class="text-slate-500 mt-1">ลบโพสต์ที่ไม่เหมาะสมออกจาก Cloud Database</p>
+                        <p class="text-slate-500 mt-1">ลบโพสต์ที่ไม่เหมาะสมออกจากฐานข้อมูล</p>
                     </div>
                 </div>
 
@@ -270,25 +270,26 @@
 
     <!-- Firebase & Logic Script -->
     <script type="module">
-        // --- นำเข้า Firebase SDK ---
+        // --- นำเข้า Firebase SDK จาก CDN ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- ตั้งค่า Firebase ---
-        let app, auth, db;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'phuketmate-app-dev';
-        
-        try {
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                // Mock config fallback ถ้าเป็นการรันปกติ (แต่ในระบบนี้จะมี __firebase_config ฉีดเข้ามาให้)
-            };
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (e) {
-            console.error("Firebase Initialization Failed:", e);
-        }
+        // --- ตั้งค่า Firebase ของคุณเองที่เพิ่งสร้างมา ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBavnrUlF5P9E0JGnDNdEWT03TJuWoAN_s",
+            authDomain: "phuketmate.firebaseapp.com",
+            projectId: "phuketmate",
+            storageBucket: "phuketmate.firebasestorage.app",
+            messagingSenderId: "559231816542",
+            appId: "1:559231816542:web:b24a68cb65a7890b4675cf",
+            measurementId: "G-TV83MXX49L"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // --- Data State ---
         const CATEGORIES = [
@@ -303,23 +304,18 @@
         let activities = [];
         let currentTab = 'home';
         let activeCategory = 'all';
-        let currentWeekStart = new Date('2026-03-30'); 
+        let currentWeekStart = new Date('2026-03-30'); // ยึดวันที่นี้เป็นค่าเริ่มต้น
         const TODAY_STR = '2026-03-30';
         let currentUser = null;
         let isInitialLoadDone = false;
 
-        // --- ฟังก์ชันยืนยันตัวตน (Authentication) ---
+        // --- ฟังก์ชันยืนยันตัวตนแบบ Anonymous (เพื่อให้ทุกคนกดเข้ามาแล้วใช้ได้เลย) ---
         const initAuth = async () => {
-            if (!auth) return;
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInAnonymously(auth);
             } catch (error) {
                 console.error("Auth Error:", error);
-                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>";
+                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบการตั้งค่า Rules</div>";
             }
         };
 
@@ -330,37 +326,34 @@
             }
         });
 
-        // --- ระบบดึงข้อมูลเรียลไทม์ (Real-time Firestore Listener) ---
+        // --- ระบบดึงข้อมูลเรียลไทม์จาก Firestore ของคุณ ---
         const setupRealtimeListener = () => {
             if (!currentUser) return;
-            // Rule 1: ใช้ Path ที่กำหนดเท่านั้น (Public Data)
-            const activitiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'activities');
+            
+            // Path ที่เก็บข้อมูล จะถูกเก็บใน Collection ชื่อ 'activities' 
+            const activitiesRef = collection(db, 'activities');
             
             onSnapshot(activitiesRef, (snapshot) => {
                 activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                // ถ้าฐานข้อมูลว่างเปล่า (โหลดครั้งแรก) ให้สร้างข้อมูลจำลองลงไป
+                // ถ้าฐานข้อมูลของคุณเพิ่งสร้างและยังว่างเปล่า ให้ใส่ข้อมูลจำลองให้ก่อน 3 อัน
                 if (activities.length === 0 && !isInitialLoadDone) {
                     seedInitialData(activitiesRef);
                     isInitialLoadDone = true;
-                    return; // รอ Snapshot รอบหน้าทำงาน
+                    return; // รอให้มันเด้งกลับมาในรอบหน้า
                 }
 
                 isInitialLoadDone = true;
-                // ซ่อนหน้าจอ Loading
                 document.getElementById('loading-overlay').classList.add('hidden');
                 
-                // อัปเดตหน้าจอทันทีเมื่อมีข้อมูลใหม่เข้ามา
                 if (currentTab === 'home') renderDashboard();
                 if (currentTab === 'admin') renderAdmin();
                 
-                // ถ้าระหว่างที่มีคนแชท Pop-up เปิดอยู่ ให้อัปเดต Pop-up ด้วย
                 const modal = document.getElementById('activity-modal');
                 const openModalId = modal.getAttribute('data-open-id');
                 if (openModalId && !modal.classList.contains('hidden')) {
                     const isJoinForm = document.getElementById('j_name') !== null;
                     if (!isJoinForm) {
-                        // เช็คว่าผู้ใช้กำลังพิมพ์แชทอยู่ไหม จะได้ไม่กวนการพิมพ์
                         const msgInput = document.getElementById(`chat-msg-${openModalId}`);
                         const nameInput = document.getElementById(`chat-name-${openModalId}`);
                         const isFocused = document.activeElement === msgInput || document.activeElement === nameInput;
@@ -369,7 +362,6 @@
 
                         window.openModal(openModalId, true);
 
-                        // คืนค่าที่พิมพ์ค้างไว้ให้
                         if (isFocused) {
                             const newMsgInput = document.getElementById(`chat-msg-${openModalId}`);
                             const newNameInput = document.getElementById(`chat-name-${openModalId}`);
@@ -384,6 +376,7 @@
                 }
             }, (error) => {
                 console.error("Firestore Listener Error:", error);
+                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>เกิดข้อผิดพลาดในการโหลดข้อมูล (ตรวจสอบ Rules ของ Firestore ว่าเป็น Test Mode หรือยัง)</div>";
             });
         };
 
@@ -400,7 +393,6 @@
         };
 
         // --- Functions Logic ที่ต้องเปิดให้ UI เข้าถึงได้ผ่าน window. ---
-
         window.switchTab = (tabId) => {
             currentTab = tabId;
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -461,7 +453,6 @@
                     dayActs = dayActs.filter(a => a.category === activeCategory);
                 }
 
-                // เรียงตามเวลา (ถ้าดึงจากฐานข้อมูลมาอาจจะสลับกัน)
                 dayActs.sort((a,b) => a.time.localeCompare(b.time));
 
                 let dateBlockClass = isToday ? 'bg-gradient-to-b from-blue-600 to-blue-700 text-white border-blue-700' : 'bg-slate-50 border-slate-200 text-slate-700';
@@ -525,10 +516,12 @@
             calContainer.innerHTML = calHtml;
         }
 
-        // เพิ่มกิจกรรมลง Cloud
         window.handleCreate = async (e) => {
             e.preventDefault();
-            if(!currentUser) return;
+            if(!currentUser) {
+                alert("ระบบกำลังเชื่อมต่อฐานข้อมูล โปรดรอสักครู่...");
+                return;
+            }
 
             const autoCategorize = (title, desc) => {
                 const text = (title + ' ' + desc).toLowerCase();
@@ -549,7 +542,7 @@
                 if(radio.checked) targetGender = radio.value;
             });
 
-            const newId = Date.now().toString(); // รหัสอ้างอิง
+            const newId = Date.now().toString(); 
             const newAct = {
                 creatorName: document.getElementById('f_name').value,
                 creatorGender: document.getElementById('f_gender').value,
@@ -567,24 +560,23 @@
                 createdAt: new Date().toISOString()
             };
 
-            // โยนขึ้น Firestore (Cloud)
+            // อัปเดตข้อมูลไปที่ Firebase ของคุณ
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'activities', newId), newAct);
-                alert("โพสต์กิจกรรมขึ้น Cloud สำเร็จ! คนอื่นเห็นแน่นอนครับ 🌴");
+                await setDoc(doc(db, 'activities', newId), newAct);
+                alert("โพสต์กิจกรรมขึ้นฐานข้อมูลสำเร็จ!");
                 document.getElementById('createForm').reset();
                 window.switchTab('home');
             } catch (error) {
                 console.error("Error creating post", error);
-                alert("เกิดข้อผิดพลาดในการโพสต์ โปรดลองใหม่");
+                alert("เกิดข้อผิดพลาดในการโพสต์ โปรดตรวจสอบว่าเปิด Rules เป็น Test Mode หรือยัง");
             }
         };
 
-        // ลบข้อมูลบน Cloud (Admin)
         window.deleteActivity = async (id) => {
             if(!currentUser) return;
-            if(confirm('คุณแน่ใจหรือไม่ที่จะลบกิจกรรมนี้ออกจาก Cloud?')) {
+            if(confirm('คุณแน่ใจหรือไม่ที่จะลบกิจกรรมนี้?')) {
                 try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'activities', id));
+                    await deleteDoc(doc(db, 'activities', id));
                 } catch(error) {
                     console.error("Error deleting", error);
                 }
@@ -624,7 +616,6 @@
             tbody.innerHTML = html;
         }
 
-        // --- ระบบแสดงผล Modal (รองรับ Real-time) ---
         window.openModal = (id, isSilentUpdate = false) => {
             const act = activities.find(a => a.id === id);
             if(!act) return;
@@ -724,7 +715,6 @@
                     ${interestedHtml}
                 </div>
 
-                <!-- ห้องแชท Cloud -->
                 <div class="border-t border-slate-100 pt-4 mt-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center">
                         <i class="fa-regular fa-comments text-blue-500 mr-2"></i>กระดานพูดคุย (Live Chat)
@@ -755,14 +745,12 @@
                 modalEl.classList.remove('hidden');
             }
 
-            // เลื่อนลงล่างสุดในแชทเสมอ
             setTimeout(() => {
                 const box = document.getElementById(`chat-box-${act.id}`);
                 if(box) box.scrollTop = box.scrollHeight;
             }, 50);
         };
 
-        // ส่งข้อความขึ้น Cloud
         window.sendChatMessage = async (e, id) => {
             e.preventDefault();
             if(!currentUser) return;
@@ -779,13 +767,11 @@
                 time: timeStr
             };
 
-            const actRef = doc(db, 'artifacts', appId, 'public', 'data', 'activities', id);
+            const actRef = doc(db, 'activities', id);
             
-            // ล้างช่องกรอกทันทีเพื่อความสมูท
             msgInput.value = '';
             
             try {
-                // อัปเดต Array ใน Firestore แบบ Real-time
                 await updateDoc(actRef, {
                     chat: arrayUnion(newMsg)
                 });
@@ -797,7 +783,7 @@
 
         window.showJoinForm = (id) => {
             const act = activities.find(a => a.id === id);
-            document.getElementById('activity-modal').setAttribute('data-open-id', 'join_form'); // ป้องกันรีเฟรชกวนฟอร์ม
+            document.getElementById('activity-modal').setAttribute('data-open-id', 'join_form'); 
             
             let html = `
             <div class="bg-blue-50 p-4 flex justify-between items-center border-b border-blue-100">
@@ -838,7 +824,7 @@
 
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> บันทึกขึ้น Cloud
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> บันทึกข้อมูล
                     </button>
                 </div>
             </form>
@@ -846,7 +832,6 @@
             document.getElementById('modal-content').innerHTML = html;
         };
 
-        // เพิ่มคนสนใจขึ้น Cloud
         window.submitJoinForm = async (e, id) => {
             e.preventDefault();
             if(!currentUser) return;
@@ -858,13 +843,13 @@
                 age: ageVal ? ageVal : 'ไม่ระบุ'
             };
 
-            const actRef = doc(db, 'artifacts', appId, 'public', 'data', 'activities', id);
+            const actRef = doc(db, 'activities', id);
             
             try {
                 await updateDoc(actRef, {
                     interested: arrayUnion(newInterest)
                 });
-                alert("ลงชื่อสนใจบน Cloud สำเร็จ! คนตั้งโพสต์จะเห็นชื่อคุณทันทีครับ 👏");
+                alert("ลงชื่อสนใจสำเร็จ! คนตั้งโพสต์จะเห็นชื่อคุณทันทีครับ 👏");
                 window.openModal(id);
             } catch(err) {
                 console.error("Join error", err);
@@ -884,7 +869,6 @@
         document.getElementById('f_date').value = TODAY_STR;
         document.getElementById('f_date').min = TODAY_STR;
         
-        // รันฟังก์ชันยืนยันตัวตน เพื่อปลดล็อก Database
         initAuth();
 
     </script>
