@@ -77,32 +77,32 @@
         
         <!-- ================= หน้า 1: Dashboard ================= -->
         <div id="view-home" class="view-section animate-[fadeIn_0.3s_ease-in-out]">
-            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 mb-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h1 class="text-3xl font-bold text-slate-800">กิจกรรมภูเก็ต 🌴</h1>
-                        <p class="text-slate-500 mt-1">หาคนหารค่ารถ กินข้าว หรือทำกิจกรรมต่างๆ (ข้อมูลอัปเดตเรียลไทม์)</p>
+                        <h1 class="text-2xl font-bold text-slate-800">กิจกรรมภูเก็ต 🌴</h1>
+                        <p class="text-slate-500 text-sm mt-0.5">หาเพื่อนเที่ยว กินข้าว หรือทำกิจกรรมต่างๆ (อัปเดตเรียลไทม์)</p>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-1 flex items-center shrink-0">
-                        <button onclick="window.changeWeek(-7)" class="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg transition-all">
-                            <i class="fa-solid fa-chevron-left"></i>
+                    <div class="bg-slate-50 rounded-lg border border-slate-200 p-1 flex items-center shrink-0">
+                        <button onclick="window.changeWeek(-7)" class="p-1.5 text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all">
+                            <i class="fa-solid fa-chevron-left w-5"></i>
                         </button>
-                        <button onclick="window.changeWeek(0)" class="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-white hover:shadow-sm rounded-lg transition-all mx-1">
-                            <i class="fa-regular fa-calendar text-blue-500 mr-2"></i> สัปดาห์นี้
+                        <button onclick="window.changeWeek(0)" class="px-3 py-1.5 text-sm font-bold text-slate-700 hover:bg-white hover:shadow-sm rounded transition-all mx-1">
+                            <i class="fa-regular fa-calendar text-blue-500 mr-1.5"></i> สัปดาห์นี้
                         </button>
-                        <button onclick="window.changeWeek(7)" class="p-2 text-slate-600 hover:bg-white hover:shadow-sm rounded-lg transition-all">
-                            <i class="fa-solid fa-chevron-right"></i>
+                        <button onclick="window.changeWeek(7)" class="p-1.5 text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all">
+                            <i class="fa-solid fa-chevron-right w-5"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-container">
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide" id="category-container">
                     <!-- Javascript -->
                 </div>
             </div>
 
-            <div id="calendar-container" class="space-y-6">
+            <div id="calendar-container" class="space-y-4">
                 <!-- Javascript -->
             </div>
         </div>
@@ -175,11 +175,11 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-sm font-medium text-slate-700">หัวข้อกิจกรรมสั้นๆ *</label>
-                                <input required type="text" id="f_title" maxlength="50" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="เช่น หาคนหารค่าแท็กซี่ไปป่าตอง">
+                                <input required type="text" id="f_title" maxlength="50" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-semibold" placeholder="เช่น หาเพื่อนไปกินปิ้งย่าง">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-sm font-medium text-slate-700">บรรยายกิจกรรม / รายละเอียด *</label>
-                                <textarea required id="f_desc" rows="3" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="อธิบายเพิ่มเติมว่าไปทำอะไร มีค่าใช้จ่ายไหม..."></textarea>
+                                <textarea required id="f_desc" rows="3" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="อธิบายเพิ่มเติมว่าไปทำอะไร หาคนสไตล์ไหนไปจอยกัน..."></textarea>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-sm font-medium text-slate-700">สถานที่ (เว้นว่างได้)</label>
@@ -214,7 +214,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-sm font-medium text-slate-700">เงื่อนไขอื่นๆ (ถ้ามี)</label>
-                                <input type="text" id="f_conditions" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น ขอคนขับรถเป็น, ไม่สูบบุหรี่">
+                                <input type="text" id="f_conditions" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น ขอคนคุยเก่ง, ไม่สูบบุหรี่">
                             </div>
                         </div>
                     </section>
@@ -270,12 +270,11 @@
 
     <!-- Firebase & Logic Script -->
     <script type="module">
-        // --- นำเข้า Firebase SDK จาก CDN ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- ตั้งค่า Firebase ของคุณเองที่เพิ่งสร้างมา ---
+        // --- ตั้งค่า Firebase ของคุณเอง ---
         const firebaseConfig = {
             apiKey: "AIzaSyBavnrUlF5P9E0JGnDNdEWT03TJuWoAN_s",
             authDomain: "phuketmate.firebaseapp.com",
@@ -286,7 +285,6 @@
             measurementId: "G-TV83MXX49L"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -304,12 +302,11 @@
         let activities = [];
         let currentTab = 'home';
         let activeCategory = 'all';
-        let currentWeekStart = new Date('2026-03-30'); // ยึดวันที่นี้เป็นค่าเริ่มต้น
+        let currentWeekStart = new Date('2026-03-30'); 
         const TODAY_STR = '2026-03-30';
         let currentUser = null;
         let isInitialLoadDone = false;
 
-        // --- ฟังก์ชันยืนยันตัวตนแบบ Anonymous (เพื่อให้ทุกคนกดเข้ามาแล้วใช้ได้เลย) ---
         const initAuth = async () => {
             try {
                 await signInAnonymously(auth);
@@ -326,21 +323,20 @@
             }
         });
 
-        // --- ระบบดึงข้อมูลเรียลไทม์จาก Firestore ของคุณ ---
+        // --- ระบบดึงข้อมูล ---
         const setupRealtimeListener = () => {
             if (!currentUser) return;
             
-            // Path ที่เก็บข้อมูล จะถูกเก็บใน Collection ชื่อ 'activities' 
-            const activitiesRef = collection(db, 'activities');
+            // เปลี่ยน collection ใหม่เป็น activities_v2 เพื่อให้โชว์ข้อมูลจำลองชุดใหม่ และทิ้งของเก่าไป
+            const activitiesRef = collection(db, 'activities_v2');
             
             onSnapshot(activitiesRef, (snapshot) => {
                 activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                // ถ้าฐานข้อมูลของคุณเพิ่งสร้างและยังว่างเปล่า ให้ใส่ข้อมูลจำลองให้ก่อน 3 อัน
                 if (activities.length === 0 && !isInitialLoadDone) {
                     seedInitialData(activitiesRef);
                     isInitialLoadDone = true;
-                    return; // รอให้มันเด้งกลับมาในรอบหน้า
+                    return;
                 }
 
                 isInitialLoadDone = true;
@@ -376,23 +372,26 @@
                 }
             }, (error) => {
                 console.error("Firestore Listener Error:", error);
-                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>เกิดข้อผิดพลาดในการโหลดข้อมูล (ตรวจสอบ Rules ของ Firestore ว่าเป็น Test Mode หรือยัง)</div>";
+                document.getElementById('loading-overlay').innerHTML = "<div class='text-red-500 font-bold'>เกิดข้อผิดพลาดในการโหลดข้อมูล</div>";
             });
         };
 
-        // --- ข้อมูลจำลองเมื่อเข้าเว็บครั้งแรก ---
+        // --- ข้อมูลจำลองชุดใหม่ (กระจายไว้ที่ 30-31 มีนาคม และเปลี่ยนเนื้อหาเน้นหาเพื่อนไปจอยกัน) ---
         const seedInitialData = async (activitiesRef) => {
             const seedData = [
-                { id: 'seed_1', creatorName: 'สมชาย', creatorGender: 'ชาย', creatorAge: 25, date: '2026-03-31', time: '18:00 - 20:00', title: 'เตะฟุตบอลหญ้าเทียม', description: 'ขาดคนหารค่าสนาม 2 คน เล่นขำๆ', location: 'สนามฟุตบอล TX Park', targetGender: 'ชาย', conditions: 'หารคนละ 100', category: 'sport', interested: [{name: 'นิด', gender: 'หญิง', age: 20}], chat: [{ sender: 'สมชาย', message: 'หาคนเพิ่มครับ ด่วนๆ', time: '10:00 น.' }] },
-                { id: 'seed_2', creatorName: 'แอนนี่', creatorGender: 'หญิง', creatorAge: 28, date: '2026-04-01', time: '10:00 น.', title: 'คาเฟ่ฮอปปิ้ง ย่านเมืองเก่า', description: 'หาเพื่อนสาวไปถ่ายรูปคาเฟ่เปิดใหม่', location: 'ย่าน Old Town ภูเก็ต', targetGender: 'หญิง', conditions: 'แต่งตัวคุมโทนสีขาว', category: 'chill', interested: [], chat: [] },
-                { id: 'seed_3', creatorName: 'ปอนด์', creatorGender: 'ชาย', creatorAge: 27, date: '2026-03-30', time: '19:30 น.', title: 'หาเพื่อนกินหมูกระทะ ชิลวา', description: 'อยากกินแต่ไม่อยากไปคนเดียว', location: 'ตลาดชิลวา ภูเก็ต', targetGender: 'เพศไหนก็ได้', conditions: 'กินดุ', category: 'food', interested: [], chat: [] }
+                { id: 'seed_1', creatorName: 'เอก', creatorGender: 'ชาย', creatorAge: 32, date: '2026-03-30', time: '07:00 น.', title: 'วิ่งออกกำลังกายยามเช้า', description: 'วิ่งสวนสาธารณะสะพานหิน รับลมเช้า หาเพื่อนวิ่งคุยกันชิลๆ ครับ', location: 'สะพานหิน', targetGender: 'ไม่ระบุ', conditions: 'มาแต่ตัวและรองเท้าวิ่ง', category: 'sport', interested: [], chat: [] },
+                { id: 'seed_2', creatorName: 'แอนนี่', creatorGender: 'หญิง', creatorAge: 28, date: '2026-03-30', time: '10:00 น.', title: 'คาเฟ่ฮอปปิ้ง ย่านเมืองเก่า', description: 'หาเพื่อนสาวไปถ่ายรูปคาเฟ่เปิดใหม่ ผลัดกันเป็นตากล้อง หาคนชอบถ่ายรูปจ้า', location: 'ย่าน Old Town ภูเก็ต', targetGender: 'หญิง', conditions: 'แต่งตัวคุมโทนสีขาว/เอิร์ธโทน', category: 'chill', interested: [{name: 'มายด์', gender: 'หญิง', age: 25}], chat: [] },
+                { id: 'seed_3', creatorName: 'ปอนด์', creatorGender: 'ชาย', creatorAge: 27, date: '2026-03-30', time: '12:30 น.', title: 'หาเพื่อนไปกินติ่มซำ บุญรัตน์', description: 'อยากกินหลายอย่างแต่ไปคนเดียวสั่งได้น้อย มาจอยโต๊ะสั่งกินด้วยกันครับ', location: 'บุญรัตน์ติ่มซำ สาขา 1', targetGender: 'เพศไหนก็ได้', conditions: 'กินเก่งๆ คุยสนุก', category: 'food', interested: [], chat: [] },
+                { id: 'seed_4', creatorName: 'มุก', creatorGender: 'หญิง', creatorAge: 24, date: '2026-03-31', time: '14:00 น.', title: 'หาคนนั่ง Bolt ไปป่าตองด้วยกัน', description: 'เราอยู่แถวเซ็นทรัล จะเรียกรถไปป่าตอง หาเพื่อนติดรถไปนั่งคุยกันจ้า จะได้ไม่เหงา', location: 'เซ็นทรัล ภูเก็ต', targetGender: 'ไม่ระบุ', conditions: 'ไม่มี', category: 'travel', interested: [], chat: [] },
+                { id: 'seed_5', creatorName: 'บอย', creatorGender: 'LGBTQ+', creatorAge: 30, date: '2026-03-31', time: '17:00 น.', title: 'เดินเล่นหาดกะตะ ดูซันเซ็ต', description: 'หาเพื่อนเดินชิลๆ ริมหาดกะตะ ถ่ายรูปเล่นตอนแสงเย็น คุยกันขำๆ', location: 'หาดกะตะ', targetGender: 'ไม่ระบุ', conditions: 'ชิลๆ ไม่รีบ', category: 'chill', interested: [{name: 'นัท', gender: 'ชาย', age: 29}, {name: 'จอย', gender: 'หญิง', age: 22}], chat: [] },
+                { id: 'seed_6', creatorName: 'เจมส์', creatorGender: 'ชาย', creatorAge: 26, date: '2026-03-31', time: '20:00 น.', title: 'นั่งชิลฟังเพลง ร้านคอท่อม', description: 'หาเพื่อนชนแก้ว ฟังเพลงสดครับ จองโต๊ะไว้แล้ว 4 ที่ มาจอยกันสนุกๆ เน้นเฮฮา', location: 'ร้านคอท่อม ภูเก็ต', targetGender: 'เพศไหนก็ได้', conditions: 'มาจอยกันสนุกๆ', category: 'chill', interested: [], chat: [{ sender: 'เจมส์', message: 'ใครสนใจทักมาได้เลยครับ โต๊ะหน้าเวที ว่างอีก 2 ที่', time: '12:00 น.' }] }
             ];
             for (const item of seedData) {
                 await setDoc(doc(activitiesRef, item.id), item);
             }
         };
 
-        // --- Functions Logic ที่ต้องเปิดให้ UI เข้าถึงได้ผ่าน window. ---
+        // --- Functions Logic ---
         window.switchTab = (tabId) => {
             currentTab = tabId;
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -431,8 +430,8 @@
             CATEGORIES.forEach(cat => {
                 const isActive = activeCategory === cat.id;
                 const activeClass = isActive ? `${cat.color} border-transparent shadow-md` : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50';
-                catHtml += `<button onclick="window.setCategory('${cat.id}')" class="shrink-0 flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${activeClass}">
-                    <span class="mr-1.5 text-base">${cat.icon}</span> ${cat.label}
+                catHtml += `<button onclick="window.setCategory('${cat.id}')" class="shrink-0 flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${activeClass}">
+                    <span class="mr-1 text-base">${cat.icon}</span> ${cat.label}
                 </button>`;
             });
             catContainer.innerHTML = catHtml;
@@ -458,20 +457,20 @@
                 let dateBlockClass = isToday ? 'bg-gradient-to-b from-blue-600 to-blue-700 text-white border-blue-700' : 'bg-slate-50 border-slate-200 text-slate-700';
                 
                 let dayHtml = `
-                <div class="flex flex-col sm:flex-row bg-white rounded-2xl shadow-sm border ${isToday ? 'border-blue-400 shadow-blue-100' : 'border-slate-200'} overflow-hidden transition-all">
-                    <div class="sm:w-32 shrink-0 flex flex-row sm:flex-col items-center justify-between sm:justify-center p-4 sm:border-r border-b sm:border-b-0 ${dateBlockClass}">
+                <div class="flex flex-col sm:flex-row bg-white rounded-xl shadow-sm border ${isToday ? 'border-blue-400 shadow-blue-50' : 'border-slate-200'} overflow-hidden transition-all">
+                    <div class="sm:w-[5.5rem] shrink-0 flex flex-row sm:flex-col items-center justify-between sm:justify-center px-4 py-3 sm:px-2 sm:py-3 sm:border-r border-b sm:border-b-0 ${dateBlockClass}">
                         <div class="flex sm:flex-col items-center gap-2 sm:gap-0">
-                            <span class="text-sm font-bold uppercase tracking-wider opacity-90">${daysNames[d.getDay()]}</span>
-                            <span class="text-3xl sm:text-4xl font-black my-0 sm:my-1">${d.getDate()}</span>
-                            <span class="text-sm font-medium opacity-90">${monthNames[d.getMonth()]}</span>
+                            <span class="text-xs font-bold uppercase tracking-wider opacity-90">${daysNames[d.getDay()]}</span>
+                            <span class="text-2xl sm:text-3xl font-black my-0 sm:my-0.5">${d.getDate()}</span>
+                            <span class="text-xs font-medium opacity-90">${monthNames[d.getMonth()]}</span>
                         </div>
-                        ${isToday ? `<span class="sm:mt-3 text-[10px] font-bold bg-white text-blue-700 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">วันนี้</span>` : ''}
+                        ${isToday ? `<span class="sm:mt-2 text-[10px] font-bold bg-white text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">วันนี้</span>` : ''}
                     </div>
-                    <div class="flex-1 p-4 sm:p-5 space-y-3">
+                    <div class="flex-1 p-2.5 sm:p-3 flex flex-col gap-2">
                 `;
 
                 if (dayActs.length === 0) {
-                    dayHtml += `<div class="h-full min-h-[80px] flex items-center justify-center text-slate-400 text-sm bg-slate-50/50 rounded-xl border border-dashed border-slate-200">ไม่มีกิจกรรมในหมวดหมู่นี้</div>`;
+                    dayHtml += `<div class="h-full min-h-[50px] flex items-center justify-center text-slate-400 text-sm bg-slate-50/50 rounded-lg border border-dashed border-slate-200">ไม่มีกิจกรรมในหมวดหมู่นี้</div>`;
                 } else {
                     dayActs.forEach(act => {
                         let catInfo = CATEGORIES.find(c => c.id === act.category) || CATEGORIES[5];
@@ -479,31 +478,35 @@
                         let interestCount = act.interested ? act.interested.length : 0;
 
                         dayHtml += `
-                        <div onclick="window.openModal('${act.id}')" class="group flex flex-col sm:flex-row bg-white border border-slate-100 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer gap-4 items-start sm:items-center relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-1 ${colorBase} opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                        <div onclick="window.openModal('${act.id}')" class="group flex flex-col sm:flex-row bg-white border border-slate-100 rounded-lg p-2.5 sm:p-3 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer gap-2 sm:gap-3 items-start sm:items-center relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 ${colorBase} opacity-70 group-hover:opacity-100 transition-opacity"></div>
                             
-                            <div class="flex flex-col items-start sm:items-center justify-center shrink-0 sm:w-28 pl-3">
-                                <div class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight group-hover:text-blue-600 transition-colors">${act.time}</div>
-                                <div class="mt-1 flex items-center text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                            <div class="flex flex-row sm:flex-col items-center sm:items-start justify-between w-full sm:w-[5.5rem] pl-3 sm:pl-2 shrink-0 border-b sm:border-0 border-slate-100 pb-2 sm:pb-0 mb-1 sm:mb-0">
+                                <div class="text-lg sm:text-[1.1rem] font-black text-slate-800 tracking-tight group-hover:text-blue-600 transition-colors">${act.time}</div>
+                                <div class="mt-0.5 flex items-center text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
                                     <span class="mr-1">${catInfo.icon}</span> ${catInfo.label}
                                 </div>
                             </div>
-                            <div class="hidden sm:block w-px h-12 bg-slate-100"></div>
                             
-                            <div class="flex-1 min-w-0 w-full mt-2 sm:mt-0">
-                                <h3 class="text-base font-bold text-slate-800 group-hover:text-blue-600 leading-tight mb-1 truncate">${act.title}</h3>
-                                <p class="text-xs text-slate-500 line-clamp-1">${act.description}</p>
+                            <div class="hidden sm:block w-px h-10 bg-slate-200"></div>
+                            
+                            <div class="flex-1 min-w-0 w-full px-1">
+                                <h3 class="text-base sm:text-[1.05rem] font-bold text-slate-800 group-hover:text-blue-600 leading-tight mb-0.5 truncate">${act.title}</h3>
+                                <div class="flex items-center gap-1.5 text-sm text-slate-500 line-clamp-1">
+                                    ${act.location ? `<span class="inline-flex items-center text-slate-600 shrink-0"><i class="fa-solid fa-location-dot text-red-400 mr-1 text-[11px]"></i><span class="truncate max-w-[100px] sm:max-w-[140px]">${act.location}</span></span><span class="text-slate-300">•</span>` : ''}
+                                    <span class="truncate">${act.description}</span>
+                                </div>
                             </div>
                             
-                            <div class="flex flex-col gap-2 shrink-0 w-full sm:w-[150px] text-xs font-medium bg-slate-50 sm:bg-transparent p-2 sm:p-0 rounded-lg">
-                                <div class="flex items-center text-slate-600">
-                                    <i class="fa-solid fa-users w-3.5 mr-1.5 text-blue-500 text-center"></i>
-                                    <span class="truncate">หา: ${act.targetGender}</span>
+                            <div class="flex flex-row sm:flex-col gap-2 sm:gap-1 shrink-0 w-full sm:w-[120px] text-sm font-medium p-2 sm:p-0 bg-slate-50 sm:bg-transparent rounded sm:rounded-none border border-slate-100 sm:border-0">
+                                <div class="flex items-center text-slate-600 w-1/2 sm:w-full">
+                                    <i class="fa-solid fa-users w-4 text-blue-500 text-center"></i>
+                                    <span class="truncate ml-1 text-xs sm:text-sm">หา: ${act.targetGender}</span>
                                 </div>
-                                <div class="flex items-center text-slate-600">
-                                    <i class="fa-solid fa-hand-sparkles w-3.5 mr-1.5 ${interestCount > 0 ? 'text-amber-500' : 'text-slate-400'} text-center"></i>
-                                    <span class="truncate font-semibold ${interestCount > 0 ? 'text-amber-600' : 'text-slate-500'}">
-                                        สนใจแล้ว: ${interestCount} คน
+                                <div class="flex items-center text-slate-600 w-1/2 sm:w-full">
+                                    <i class="fa-solid fa-hand-sparkles w-4 ${interestCount > 0 ? 'text-amber-500' : 'text-slate-400'} text-center"></i>
+                                    <span class="truncate ml-1 font-semibold text-xs sm:text-sm ${interestCount > 0 ? 'text-amber-600' : 'text-slate-500'}">
+                                        สนใจ: ${interestCount} คน
                                     </span>
                                 </div>
                             </div>
@@ -560,9 +563,9 @@
                 createdAt: new Date().toISOString()
             };
 
-            // อัปเดตข้อมูลไปที่ Firebase ของคุณ
             try {
-                await setDoc(doc(db, 'activities', newId), newAct);
+                // ใช้ activities_v2 ตามที่แก้ใหม่
+                await setDoc(doc(db, 'activities_v2', newId), newAct);
                 alert("โพสต์กิจกรรมขึ้นฐานข้อมูลสำเร็จ!");
                 document.getElementById('createForm').reset();
                 window.switchTab('home');
@@ -576,7 +579,7 @@
             if(!currentUser) return;
             if(confirm('คุณแน่ใจหรือไม่ที่จะลบกิจกรรมนี้?')) {
                 try {
-                    await deleteDoc(doc(db, 'activities', id));
+                    await deleteDoc(doc(db, 'activities_v2', id));
                 } catch(error) {
                     console.error("Error deleting", error);
                 }
@@ -767,7 +770,7 @@
                 time: timeStr
             };
 
-            const actRef = doc(db, 'activities', id);
+            const actRef = doc(db, 'activities_v2', id);
             
             msgInput.value = '';
             
@@ -843,7 +846,7 @@
                 age: ageVal ? ageVal : 'ไม่ระบุ'
             };
 
-            const actRef = doc(db, 'activities', id);
+            const actRef = doc(db, 'activities_v2', id);
             
             try {
                 await updateDoc(actRef, {
