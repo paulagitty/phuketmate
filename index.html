@@ -327,7 +327,7 @@
         const setupRealtimeListener = () => {
             if (!currentUser) return;
             
-            // เปลี่ยน collection ใหม่เป็น activities_v2 เพื่อให้โชว์ข้อมูลจำลองชุดใหม่ และทิ้งของเก่าไป
+            // ใช้ activities_v2 เพื่อรักษากลุ่มข้อมูลจำลองล่าสุด
             const activitiesRef = collection(db, 'activities_v2');
             
             onSnapshot(activitiesRef, (snapshot) => {
@@ -376,14 +376,14 @@
             });
         };
 
-        // --- ข้อมูลจำลองชุดใหม่ (กระจายไว้ที่ 30-31 มีนาคม และเปลี่ยนเนื้อหาเน้นหาเพื่อนไปจอยกัน) ---
+        // --- ข้อมูลจำลองชุดเดิม (กระจายไว้ที่ 30-31 มีนาคม) ---
         const seedInitialData = async (activitiesRef) => {
             const seedData = [
                 { id: 'seed_1', creatorName: 'เอก', creatorGender: 'ชาย', creatorAge: 32, date: '2026-03-30', time: '07:00 น.', title: 'วิ่งออกกำลังกายยามเช้า', description: 'วิ่งสวนสาธารณะสะพานหิน รับลมเช้า หาเพื่อนวิ่งคุยกันชิลๆ ครับ', location: 'สะพานหิน', targetGender: 'ไม่ระบุ', conditions: 'มาแต่ตัวและรองเท้าวิ่ง', category: 'sport', interested: [], chat: [] },
-                { id: 'seed_2', creatorName: 'แอนนี่', creatorGender: 'หญิง', creatorAge: 28, date: '2026-03-30', time: '10:00 น.', title: 'คาเฟ่ฮอปปิ้ง ย่านเมืองเก่า', description: 'หาเพื่อนสาวไปถ่ายรูปคาเฟ่เปิดใหม่ ผลัดกันเป็นตากล้อง หาคนชอบถ่ายรูปจ้า', location: 'ย่าน Old Town ภูเก็ต', targetGender: 'หญิง', conditions: 'แต่งตัวคุมโทนสีขาว/เอิร์ธโทน', category: 'chill', interested: [{name: 'มายด์', gender: 'หญิง', age: 25}], chat: [] },
+                { id: 'seed_2', creatorName: 'แอนนี่', creatorGender: 'หญิง', creatorAge: 28, date: '2026-03-30', time: '10:00 น.', title: 'คาเฟ่ฮอปปิ้ง ย่านเมืองเก่า', description: 'หาเพื่อนสาวไปถ่ายรูปคาเฟ่เปิดใหม่ ผลัดกันเป็นตากล้อง หาคนชอบถ่ายรูปจ้า', location: 'ย่าน Old Town ภูเก็ต', targetGender: 'หญิง', conditions: 'แต่งตัวคุมโทนสีขาว/เอิร์ธโทน', category: 'chill', interested: [{name: 'มายด์', gender: 'หญิง', age: 25, contact: 'ID Line: mind.chill'}], chat: [] },
                 { id: 'seed_3', creatorName: 'ปอนด์', creatorGender: 'ชาย', creatorAge: 27, date: '2026-03-30', time: '12:30 น.', title: 'หาเพื่อนไปกินติ่มซำ บุญรัตน์', description: 'อยากกินหลายอย่างแต่ไปคนเดียวสั่งได้น้อย มาจอยโต๊ะสั่งกินด้วยกันครับ', location: 'บุญรัตน์ติ่มซำ สาขา 1', targetGender: 'เพศไหนก็ได้', conditions: 'กินเก่งๆ คุยสนุก', category: 'food', interested: [], chat: [] },
                 { id: 'seed_4', creatorName: 'มุก', creatorGender: 'หญิง', creatorAge: 24, date: '2026-03-31', time: '14:00 น.', title: 'หาคนนั่ง Bolt ไปป่าตองด้วยกัน', description: 'เราอยู่แถวเซ็นทรัล จะเรียกรถไปป่าตอง หาเพื่อนติดรถไปนั่งคุยกันจ้า จะได้ไม่เหงา', location: 'เซ็นทรัล ภูเก็ต', targetGender: 'ไม่ระบุ', conditions: 'ไม่มี', category: 'travel', interested: [], chat: [] },
-                { id: 'seed_5', creatorName: 'บอย', creatorGender: 'LGBTQ+', creatorAge: 30, date: '2026-03-31', time: '17:00 น.', title: 'เดินเล่นหาดกะตะ ดูซันเซ็ต', description: 'หาเพื่อนเดินชิลๆ ริมหาดกะตะ ถ่ายรูปเล่นตอนแสงเย็น คุยกันขำๆ', location: 'หาดกะตะ', targetGender: 'ไม่ระบุ', conditions: 'ชิลๆ ไม่รีบ', category: 'chill', interested: [{name: 'นัท', gender: 'ชาย', age: 29}, {name: 'จอย', gender: 'หญิง', age: 22}], chat: [] },
+                { id: 'seed_5', creatorName: 'บอย', creatorGender: 'LGBTQ+', creatorAge: 30, date: '2026-03-31', time: '17:00 น.', title: 'เดินเล่นหาดกะตะ ดูซันเซ็ต', description: 'หาเพื่อนเดินชิลๆ ริมหาดกะตะ ถ่ายรูปเล่นตอนแสงเย็น คุยกันขำๆ', location: 'หาดกะตะ', targetGender: 'ไม่ระบุ', conditions: 'ชิลๆ ไม่รีบ', category: 'chill', interested: [{name: 'นัท', gender: 'ชาย', age: 29, contact: '081-234-xxxx'}, {name: 'จอย', gender: 'หญิง', age: 22, contact: 'FB: Joy Phuket'}], chat: [] },
                 { id: 'seed_6', creatorName: 'เจมส์', creatorGender: 'ชาย', creatorAge: 26, date: '2026-03-31', time: '20:00 น.', title: 'นั่งชิลฟังเพลง ร้านคอท่อม', description: 'หาเพื่อนชนแก้ว ฟังเพลงสดครับ จองโต๊ะไว้แล้ว 4 ที่ มาจอยกันสนุกๆ เน้นเฮฮา', location: 'ร้านคอท่อม ภูเก็ต', targetGender: 'เพศไหนก็ได้', conditions: 'มาจอยกันสนุกๆ', category: 'chill', interested: [], chat: [{ sender: 'เจมส์', message: 'ใครสนใจทักมาได้เลยครับ โต๊ะหน้าเวที ว่างอีก 2 ที่', time: '12:00 น.' }] }
             ];
             for (const item of seedData) {
@@ -477,7 +477,6 @@
                         let colorBase = catInfo.color.split(' ')[0];
                         let interestCount = act.interested ? act.interested.length : 0;
 
-                        // ปรับขนาด sm:w-[145px] ให้กว้างขึ้นเพื่อรองรับข้อความ "เพศไหนก็ได้"
                         dayHtml += `
                         <div onclick="window.openModal('${act.id}')" class="group flex flex-col sm:flex-row bg-white border border-slate-100 rounded-lg p-2.5 sm:p-3 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer gap-2 sm:gap-3 items-start sm:items-center relative overflow-hidden">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 ${colorBase} opacity-70 group-hover:opacity-100 transition-opacity"></div>
@@ -565,7 +564,6 @@
             };
 
             try {
-                // ใช้ activities_v2 ตามที่แก้ใหม่
                 await setDoc(doc(db, 'activities_v2', newId), newAct);
                 alert("โพสต์กิจกรรมขึ้นฐานข้อมูลสำเร็จ!");
                 document.getElementById('createForm').reset();
@@ -635,9 +633,14 @@
                 interestedHtml = `<ul class="space-y-2">`;
                 act.interested.forEach(p => {
                     interestedHtml += `
-                    <li class="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 text-sm text-slate-700 flex items-center shadow-sm">
-                        <i class="fa-solid fa-user-check text-blue-500 mr-2"></i>
-                        <span class="font-bold text-slate-800 mr-1.5">${p.name}</span> / ${p.gender} / ${p.age} ปี
+                    <li class="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 text-sm text-slate-700 flex flex-col shadow-sm animate-[fadeIn_0.3s_ease]">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-user-check text-blue-500 mr-2"></i>
+                            <span class="font-bold text-slate-800 mr-1.5">${p.name}</span> / ${p.gender} / ${p.age} ปี
+                        </div>
+                        ${p.contact ? `<div class="mt-1 text-[13px] text-slate-600 bg-white/50 px-2 py-1 rounded border border-blue-50 italic">
+                            <i class="fa-solid fa-address-book mr-1 text-blue-400"></i> ติดต่อ: ${p.contact}
+                        </div>` : ''}
                     </li>`;
                 });
                 interestedHtml += `</ul>`;
@@ -797,21 +800,21 @@
                 </button>
             </div>
             
-            <form onsubmit="window.submitJoinForm(event, '${id}')" class="p-6 space-y-5">
-                <div class="text-center mb-4">
+            <form onsubmit="window.submitJoinForm(event, '${id}')" class="p-6 space-y-4">
+                <div class="text-center mb-2">
                     <h2 class="text-xl font-bold text-slate-800">ลงชื่อสนใจเข้าร่วม</h2>
                     <p class="text-sm text-slate-500 mt-1">กิจกรรม: <span class="font-bold text-blue-600">${act.title}</span></p>
                 </div>
                 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-slate-700">ชื่อเล่น / นามแฝง *</label>
-                    <input required type="text" id="j_name" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ใส่ชื่อของคุณ">
+                    <input required type="text" id="j_name" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="ใส่ชื่อของคุณ">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-slate-700">เพศ *</label>
-                        <select required id="j_gender" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <select required id="j_gender" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm">
                             <option value="ชาย">ชาย</option>
                             <option value="หญิง">หญิง</option>
                             <option value="LGBTQ+">LGBTQ+</option>
@@ -820,8 +823,13 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-sm font-medium text-slate-700">อายุ</label>
-                        <input type="number" id="j_age" min="15" max="99" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ไม่ระบุก็ได้">
+                        <input type="number" id="j_age" min="15" max="99" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="ไม่ระบุก็ได้">
                     </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-700">ข้อมูลติดต่อ (เช่น เบอร์โทร หรือ LINE) *</label>
+                    <input required type="text" id="j_contact" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="โทร 089xxxxx / ID Line : uuuXXX">
                 </div>
 
                 <div class="pt-4">
@@ -842,7 +850,8 @@
             const newInterest = {
                 name: document.getElementById('j_name').value,
                 gender: document.getElementById('j_gender').value,
-                age: ageVal ? ageVal : 'ไม่ระบุ'
+                age: ageVal ? ageVal : 'ไม่ระบุ',
+                contact: document.getElementById('j_contact').value // เพิ่มฟิลด์ contact
             };
 
             const actRef = doc(db, 'activities_v2', id);
@@ -851,7 +860,7 @@
                 await updateDoc(actRef, {
                     interested: arrayUnion(newInterest)
                 });
-                alert("ลงชื่อสนใจสำเร็จ! คนตั้งโพสต์จะเห็นชื่อคุณทันทีครับ 👏");
+                alert("ลงชื่อสนใจสำเร็จ! คนตั้งโพสต์จะเห็นข้อมูลติดต่อคุณทันทีครับ 👏");
                 window.openModal(id);
             } catch(err) {
                 console.error("Join error", err);
